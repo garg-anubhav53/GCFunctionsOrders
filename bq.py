@@ -2,6 +2,7 @@ from google.cloud import bigquery
 
 def main():
     orderdict = get_most_recent_order()
+    insert_order_details('1', '2024-05-01T10:00:00Z', 'Item A,Item B', 'Shipped')
     q = ''
 
 def get_most_recent_order():
@@ -28,5 +29,18 @@ def get_most_recent_order():
        
     return single_order_as_dict   
 
+def insert_order_details(order_id, order_date, order_details, order_status):
+    client = bigquery.Client()
+    table_id = "leafy-star-418020.OrbitMetricsData.orders"
+    table = client.get_table(table_id)
+
+    query =f"""
+    INSERT INTO {table_id} (order_id, order_date, order_details, order_status)
+    VALUES
+    ({order_id}, '{order_date}', '{order_details}', '{order_status}');
+    """
+
+    response = client.query(query).result()
+    j = ''
 if __name__ == '__main__':
     main()
